@@ -9,6 +9,12 @@ import { db, now, newId, newToken } from './db.mjs';
 import { parseAmount, formatAmount, sumMinor, draftItems, runStatusFromItems, canExecute, sendable, stepsFor, FAILURE_MESSAGES } from './payroll.mjs';
 
 const PORT = Number(process.env.PORT || 8787);
+// Localhost by default; hosted deployments (Railway) must listen on all interfaces.
+const HOST = process.env.HOST || (process.env.RAILWAY_ENVIRONMENT ? '0.0.0.0' : '127.0.0.1');
+const allowedOrigins = String(process.env.NV_CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
 const demo = JSON.parse(readFileSync(new URL('./demo-data.json', import.meta.url)));
 const company = demo.company;
 const T = cfg.treasury;
@@ -290,31 +296,38 @@ function paymentJson(p) {
 }
 
 // ---------- server ----------
-const send = (res, status, body, type = 'application/json') => {
-  res.writeHead(status, { 'content-type': type, 'access-control-allow-origin': '*' });
+const corsOrigin = (req) => {
+  if (!allowedOrigins.length) return '*';
+  const origin = String(req.headers.origin || '').replace(/\/$/, '');
+  return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+};
+
+const send = (req, res, status, body, type = 'application/json') => {
+  res.writeHead(status, { 'content-type': type, 'access-control-allow-origin': corsOrigin(req), vary: 'Origin' });
   res.end(type === 'application/json' ? JSON.stringify(body, (k, v) => (typeof v === 'bigint' ? v.toString() : v)) : body);
 };
 
 http.createServer(async (req, res) => {
   const path = new URL(req.url, 'http://x').pathname;
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST', 'access-control-allow-headers': 'content-type' });
+    res.writeHead(204, { 'access-control-allow-origin': corsOrigin(req), 'access-control-allow-methods': 'GET,POST', 'access-control-allow-headers': 'content-type', vary: 'Origin' });
     return res.end();
   }
   try {
+    if (req.method === 'GET' && path === '/health') return send(req, res, 200, { ok: true });
     for (const [method, re, handler] of routes) {
       const m = path.match(re);
       if (m && req.method === method) {
         const out = await handler(req, m.slice(1));
-        return out && out.status ? send(res, out.status, out.body) : send(res, 200, out);
+        return out && out.status ? send(req, res, out.status, out.body) : send(req, res, 200, out);
       }
     }
-    if (req.method === 'GET' && (path === '/status' || path === '/')) return send(res, 200, readFileSync(new URL('./public/index.html', import.meta.url)), 'text/html; charset=utf-8');
-    if (req.method === 'GET' && path === '/tokens.css') return send(res, 200, readFileSync(new URL('./public/tokens.css', import.meta.url)), 'text/css; charset=utf-8');
-    send(res, 404, { error: 'Not found', code: 'not_found' });
+    if (req.method === 'GET' && (path === '/status' || path === '/')) return send(req, res, 200, readFileSync(new URL('./public/index.html', import.meta.url)), 'text/html; charset=utf-8');
+    if (req.method === 'GET' && path === '/tokens.css') return send(req, res, 200, readFileSync(new URL('./public/tokens.css', import.meta.url)), 'text/css; charset=utf-8');
+    send(req, res, 404, { error: 'Not found', code: 'not_found' });
   } catch (e) {
-    if (e instanceof HttpError) return send(res, e.status, { error: e.message, code: e.code });
+    if (e instanceof HttpError) return send(req, res, e.status, { error: e.message, code: e.code });
     console.error(`${req.method} ${path}:`, e.message);
-    send(res, 502, { error: 'We could not reach the Stellar network. Try again.', code: 'upstream' });
+    send(req, res, 502, { error: 'We could not reach the Stellar network. Try again.', code: 'upstream' });
   }
-}).listen(PORT, process.env.HOST || '127.0.0.1', () => console.log(`Nomad Vault backend on http://${process.env.HOST || '127.0.0.1'}:${PORT} (admin signer ${admin ? 'on, demo mode' : 'off'})`));
+}).listen(PORT, HOST, () => console.log(`Nomad Vault backend on http://${HOST}:${PORT} (admin signer ${admin ? 'on, demo mode' : 'off'})`));

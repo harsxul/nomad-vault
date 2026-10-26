@@ -2,9 +2,14 @@
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
+import { dirname, join } from 'node:path';
 
-mkdirSync(new URL('./data/', import.meta.url), { recursive: true });
-export const db = new DatabaseSync(new URL('./data/nomad.db', import.meta.url).pathname);
+const localDbPath = new URL('./data/nomad.db', import.meta.url).pathname;
+const dbPath = process.env.NV_DB_PATH
+  || (process.env.RAILWAY_VOLUME_MOUNT_PATH ? join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'nomad.db') : localDbPath);
+
+mkdirSync(dirname(dbPath), { recursive: true });
+export const db = new DatabaseSync(dbPath);
 db.exec(`
   PRAGMA journal_mode = WAL;
   CREATE TABLE IF NOT EXISTS contractors (
