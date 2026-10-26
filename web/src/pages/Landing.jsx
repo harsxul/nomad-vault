@@ -16,7 +16,7 @@ const TAGS = [
   { who: 'Jonas · Berlin', amount: '380 USDC', x: 610, y: 22, mx: 560, my: 20 },
   { who: 'Maya · Lisbon', amount: '550 USDC', x: 330, y: 104, mx: 372, my: 118 },
   { who: 'Mateo · Buenos Aires', amount: '420 USDC', x: 292, y: 326, mx: 246, my: 322 },
-  { who: 'Nadia · Singapore', amount: '480 USDC', x: 1052, y: 300, mobile: false },
+  { who: 'Nadia · Singapore', amount: '480 USDC', x: 985, y: 300, mobile: false },
 ];
 
 const pct = (v, total) => `${((v / total) * 100).toFixed(2)}%`;
