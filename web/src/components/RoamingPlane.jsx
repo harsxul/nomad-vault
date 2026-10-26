@@ -129,12 +129,14 @@ export default function RoamingPlane() {
         const right = Math.random() < 0.5; // land on the right, so enter from the left (and vice versa)
         const side = right ? 1 : -1;
         const x = (f) => (right ? vw * f : vw * (1 - f));
-        const A = [right ? -60 : vw + 60, vh * rand(0.2, 0.8)];
-        const hA = (right ? 0 : Math.PI) + rand(-0.35, 0.35);
-        const B = [x(rand(0.86, 0.94)), vh * rand(0.2, 0.8)];
+        const base = vh * rand(0.25, 0.75); // one cruising height per flight keeps the sweep mostly horizontal
+        const y = (spread) => base + vh * rand(-spread, spread);
+        const A = [right ? -60 : vw + 60, y(0.05)];
+        const hA = (right ? 0 : Math.PI) + rand(-0.12, 0.12);
+        const B = [x(rand(0.86, 0.94)), y(0.05)];
         const dir = [side * Math.cos(LAND), -Math.sin(LAND)];
-        const W1 = [x(rand(0.28, 0.4)), vh * rand(0.15, 0.85)]; // two sweeping waypoints: a gentle S across the page
-        const W2 = [x(rand(0.6, 0.72)), vh * rand(0.15, 0.85)];
+        const W1 = [x(rand(0.28, 0.4)), y(0.09)]; // two sweeping waypoints: a gentle S across the page
+        const W2 = [x(rand(0.6, 0.72)), y(0.09)];
         const route = hermite([A, W1, W2, B], [Math.cos(hA) * dist(A, W1), Math.sin(hA) * dist(A, W1)], dir.map((v) => v * dist(W2, B)));
         const track = polyline([[A[0] - Math.cos(hA) * 300, A[1] - Math.sin(hA) * 300], A, ...route]); // trail starts offscreen
 
