@@ -12,15 +12,15 @@
     "note": "Circle testnet USDC (Stellar Asset Contract)"
   },
   "treasury": {
-    "account": "CCBW5GLO53X2K5H6ACMQDNWHWJXPCWTJGE5YW6EZVVRIP3AE6QP27X22",
+    "account": "CBQEGC3W3LQYOXVDGZOBNY2TCYPDALNXDBREUVLW4FTS7FOL352KHMBX",
     "accountWasmHash": "1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a",
     "ed25519Verifier": "CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4",
     "spendingLimitPolicy": "CABXBYJNZ7IUW4G3D6BND5YCAQF3ASSDMDAOKQQ63UYFSO7WUU2TIP5G",
     "payrollRuleId": 1,
-    "deployedFromLedger": 5397404,
+    "deployedFromLedger": 5397534,
     "feePayerAlias": "nv-employer",
     "spikeAccount": "CDOTGUOHQIZMIRA7WEKW4NMXH23LPPTPTOWLP6WA7ZV2AMQDUQRIME6X",
-    "setupTx": "8bcb33f52e61629ebaf7af79363a019fc2e28737f5d8f7c41ef2641117f715c0",
+    "setupTx": "3c2cd2f829fd8cea00b56d1bd61bb582e610228c716b5443d676972ee1a86df1",
     "dailyLimitMinor": "10000000000"
   },
   "privatePayments": {

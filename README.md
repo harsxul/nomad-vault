@@ -17,13 +17,13 @@ Companies that hire contractors abroad pay through slow, expensive cross-border 
 
 | What | Value |
 |---|---|
-| Treasury smart account | [`CCBW5GLO53X2K5H6ACMQDNWHWJXPCWTJGE5YW6EZVVRIP3AE6QP27X22`](https://stellar.expert/explorer/testnet/contract/CCBW5GLO53X2K5H6ACMQDNWHWJXPCWTJGE5YW6EZVVRIP3AE6QP27X22) |
+| Treasury smart account (current demo) | [`CBQEGC3W3LQYOXVDGZOBNY2TCYPDALNXDBREUVLW4FTS7FOL352KHMBX`](https://stellar.expert/explorer/testnet/contract/CBQEGC3W3LQYOXVDGZOBNY2TCYPDALNXDBREUVLW4FTS7FOL352KHMBX) |
 | Payroll asset | Circle testnet USDC, Stellar Asset Contract `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` (issuer `GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`) |
 | Spending-limit policy (OpenZeppelin) | `CABXBYJNZ7IUW4G3D6BND5YCAQF3ASSDMDAOKQQ63UYFSO7WUU2TIP5G`, rule "payroll": operator key, USDC `transfer` only, 1,000 USDC per 17,280 ledgers (about one day) |
 | Ed25519 verifier | `CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4` |
 | Smart account wasm hash | `1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a` |
 
-A real payroll run on 26 Oct 2026 (October, 1,350 USDC for three contractors):
+A real payroll run on 26 Oct 2026 (October, 1,350 USDC for three contractors), on the previous treasury [`CCBW5GLO…7X22`](https://stellar.expert/explorer/testnet/contract/CCBW5GLO53X2K5H6ACMQDNWHWJXPCWTJGE5YW6EZVVRIP3AE6QP27X22) (each `npm run demo:reset` deploys a fresh one):
 
 | Contractor | Amount | Signed by | Result |
 |---|---|---|---|
