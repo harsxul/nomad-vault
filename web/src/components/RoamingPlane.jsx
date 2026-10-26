@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import '../paperplane.css';
 
-// The "cursor" roaming the page: short curved glides that enter from a viewport edge and land in a side gutter,
+// The "cursor" roaming the page: wide curved sweeps that enter from one side edge and land near the opposite side,
 // towing its dashed trail and three tumbling coins. On landing a spark pops and the formation fades out, so it
 // never sits still. Flights are precomputed WAAPI keyframes: no per-frame JavaScript, no React renders.
 
@@ -17,8 +17,8 @@ const COINS = [
 const DASHES = 12;
 const px = (v) => v * SCALE;
 const DASH_GAP = px(14.6);
-const SPEED = 220; // average px/s
-const LAND = (62 * Math.PI) / 180; // resting climb angle: steep, so the formation stays in the margin
+const SPEED = 300; // average px/s
+const LAND = (18 * Math.PI) / 180; // arrival heading: a gentle climb, as in the original artwork
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -126,22 +126,20 @@ export default function RoamingPlane() {
       const [vw, vh] = [innerWidth, innerHeight];
       let best = null;
       for (let i = 0; i < 40; i++) {
-        const right = Math.random() < 0.5;
-        const band = (lo, hi) => vw * (right ? 1 - rand(lo, hi) : rand(lo, hi));
-        const B = [band(0.05, 0.12), vh * rand(0.25, 0.85)];
-        const dir = [right ? Math.cos(LAND) : -Math.cos(LAND), -Math.sin(LAND)];
-        const e = Math.floor(Math.random() * 3); // side, bottom or top edge
-        const A = e === 0 ? [right ? vw + 60 : -60, vh * rand(0.2, 0.9)] : [band(0.02, 0.2), e === 1 ? vh + 60 : -60];
-        const hA = e === 0 ? (right ? Math.PI : 0) + rand(-0.5, 0.5) : (e === 1 ? -1 : 1) * (Math.PI / 2) + rand(-0.4, 0.4);
-        const [k, j] = [rand(120, 200), rand(-30, 30)];
-        const W2 = [B[0] - dir[0] * k - dir[1] * j, B[1] - dir[1] * k + dir[0] * j];
-        const W1 = [band(0.03, 0.18), vh * rand(0.15, 0.85)];
-        const reach = Math.min(0.9 * dist(A, W1), 220);
-        const route = hermite([A, W1, W2, B], [Math.cos(hA) * reach, Math.sin(hA) * reach], dir.map((v) => v * dist(W2, B)));
+        const right = Math.random() < 0.5; // land on the right, so enter from the left (and vice versa)
+        const side = right ? 1 : -1;
+        const x = (f) => (right ? vw * f : vw * (1 - f));
+        const A = [right ? -60 : vw + 60, vh * rand(0.2, 0.8)];
+        const hA = (right ? 0 : Math.PI) + rand(-0.35, 0.35);
+        const B = [x(rand(0.86, 0.94)), vh * rand(0.2, 0.8)];
+        const dir = [side * Math.cos(LAND), -Math.sin(LAND)];
+        const W1 = [x(rand(0.28, 0.4)), vh * rand(0.15, 0.85)]; // two sweeping waypoints: a gentle S across the page
+        const W2 = [x(rand(0.6, 0.72)), vh * rand(0.15, 0.85)];
+        const route = hermite([A, W1, W2, B], [Math.cos(hA) * dist(A, W1), Math.sin(hA) * dist(A, W1)], dir.map((v) => v * dist(W2, B)));
         const track = polyline([[A[0] - Math.cos(hA) * 300, A[1] - Math.sin(hA) * 300], A, ...route]); // trail starts offscreen
 
         let score = 0;
-        for (const [x, y] of route) if (hits(x, y, 14, cross)) score += 20;
+        for (const [x, y] of route) if (hits(x, y, 14, cross)) score += 1; // brief passes over content are fine
         const end = pose(track, track.length, 0, 1, 1);
         const nose = px(PLANE.w / 2 - PLANE.ax);
         const blobs = COINS.map((c, n) => [end[DASHES + n][0], end[DASHES + n][1], px(c.w) / 2]);
@@ -158,7 +156,7 @@ export default function RoamingPlane() {
     function fly() {
       const p = plan();
       const L = p.track.length - p.sA;
-      const T = Math.min(5000, Math.max(2600, (L / SPEED) * 1000));
+      const T = Math.min(6500, Math.max(3500, (L / SPEED) * 1000));
       const total = T + 650 + rand(1500, 3000); // land, spark, fade out, then 1.5-3 s invisible
       const odo = rand(0, 1000);
       const frames = els.map(() => []);
@@ -175,8 +173,8 @@ export default function RoamingPlane() {
       const n = Math.ceil(T / 40);
       for (let i = 0; i <= n; i++) {
         const u = i / n;
-        const s = p.sA + L * Math.sin((Math.PI * u) / 2); // ease-out sine: enters already moving, settles to land
-        const v = (Math.PI / 2) * Math.cos((Math.PI * u) / 2) * (L / (T / 1000));
+        const s = p.sA + (L * (1 - Math.cos(Math.PI * u))) / 2; // ease-in-out sine
+        const v = (Math.PI / 2) * Math.sin(Math.PI * u) * (L / (T / 1000));
         const c = Math.cos(headingAt(p.track, s));
         if (c > 0.3) target = 1;
         else if (c < -0.3) target = -1; // roll over when heading left, so the plane never flies upside down
