@@ -13,4 +13,10 @@ export default defineConfig({
     strictPort: true,
     proxy: { '/api': { target, changeOrigin: true } },
   },
+  // `vite preview` behind a Cloudflare quick tunnel serves the full live demo (built app + real API) from this laptop.
+  preview: {
+    port: 4173,
+    proxy: { '/api': { target, changeOrigin: true } },
+    allowedHosts: ['.trycloudflare.com'],
+  },
 });

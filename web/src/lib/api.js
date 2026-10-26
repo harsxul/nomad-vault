@@ -1,5 +1,7 @@
 // Thin client for the Nomad Vault API (contract: docs/API.md). Every call goes through /api, proxied in dev.
 
+import SNAPSHOT from './snapshot.json';
+
 export class ApiError extends Error {
   constructor(message, status, code) {
     super(message);
@@ -34,9 +36,11 @@ const demoState = {
   runs: [],
 };
 
-const hostedDemo = () => !API_ORIGIN && typeof window !== 'undefined' && /(?:vercel\.app|now\.sh|tmp\.now)$/.test(window.location.hostname);
+const hostedDemo = () => typeof window !== 'undefined' && /(?:vercel\.app|now\.sh|tmp\.now)$/.test(window.location.hostname);
 
 function demoApi(path, method, body = {}) {
+  // Hosted preview: serve the real testnet snapshot (scripts/snapshot.mjs) for every page it covers.
+  if (method === 'GET' && SNAPSHOT[path]) return structuredClone(SNAPSHOT[path]);
   if (path === '/dashboard') {
     const active = demoState.contractors.filter((c) => c.status === 'active' && c.vaultAddress);
     const total = active.reduce((sum, c) => sum + Number(c.amount), 0).toFixed(2);
