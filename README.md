@@ -4,9 +4,10 @@
 
 ## Links
 
-- Pitch deck: shared in the submission
-- Demo video: shared in the submission
-- Live demo: https://nomad-vault.vercel.app (hosted frontend with sample data; real testnet payments run with the local setup below)
+- **Live demo:** https://nomad-vault.vercel.app (talks to our real Stellar testnet backend; if that is offline it shows a snapshot of the same real testnet data)
+- **Live backend, direct:** https://lows-institute-tiles-math.trycloudflare.com (served from the team laptop during judging)
+- **Repo:** https://github.com/harsxul/nomad-vault
+- Pitch deck and demo video: linked in the HackMeridian submission
 
 ## The problem
 
