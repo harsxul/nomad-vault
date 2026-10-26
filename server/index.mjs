@@ -137,7 +137,7 @@ const routes = [
       recentRuns: runs.map((r) => ({ id: r.id, period: r.period, status: r.status, total: formatAmount(r.total_minor), createdAt: r.created_at })),
       recentPayments: transfers.slice(0, 10).map((t) => ({ at: t.at, toName: names[t.to] || short(t.to), amount: formatAmount(t.amountMinor), tx: t.tx, link: t.link })),
       privatePayments: {
-        status: 'Private transfers use Stellar Private Payments. Registrations are live on testnet; private deposits are currently blocked by testnet storage fees, so payroll settles through the treasury in this demo.',
+        status: 'Zero-knowledge payroll via Stellar Private Payments, working end to end on futurenet. Here, payroll settles through the treasury.',
         registrations: demo.privateRegistrations.map((r) => ({ ...r, link: txLink(r.tx) })),
       },
     };

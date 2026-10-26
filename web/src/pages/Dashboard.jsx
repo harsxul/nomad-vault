@@ -10,8 +10,6 @@ import TxLink from '../components/TxLink.jsx';
 import ReviewPayrollButton from '../components/ReviewPayrollButton.jsx';
 import { Empty, ErrorState, Loading } from '../components/States.jsx';
 
-const SECONDS_PER_LEDGER = 5;
-
 export default function Dashboard() {
   const { data, loading, error, reload } = useApi(endpoints.dashboard);
 
@@ -44,14 +42,10 @@ export default function Dashboard() {
           <p>{nextPayroll?.funded ? <Tag tone="positive">Funded</Tag> : <Tag tone="attention">Needs funding</Tag>}</p>
         </StatCard>
 
-        <StatCard label="Payroll operator daily limit" footer={<PolicyFooter policy={policy} asset={asset} />}>
-          <p>
-            <Amount value={policy?.spentInWindow} /> of <Amount value={policy?.dailyLimit} asset={asset} /> spent
-          </p>
+        <StatCard label="Left today for the operator" footer="Above the limit, an admin approves.">
+          <Amount value={policy?.remaining} asset={asset} className="figure" />
           <Meter value={policy?.spentInWindow} max={policy?.dailyLimit} label="Daily limit used" />
-          <p className="small">
-            <Amount value={policy?.remaining} asset={asset} /> remaining today
-          </p>
+          <p className="small muted">of <Amount value={policy?.dailyLimit} /> daily limit</p>
         </StatCard>
 
         <StatCard label="Contractors" footer={<Link to="/app/contractors">Manage contractors</Link>}>
@@ -69,7 +63,7 @@ export default function Dashboard() {
             <Link to="/app/payroll" className="small">All runs</Link>
           </div>
           {recentRuns.length === 0 ? (
-            <Empty title="No payroll runs yet.">Use “Review payroll” to prepare this month’s run.</Empty>
+            <Empty title="No payroll runs yet." />
           ) : (
             <ul className="list">
               {recentRuns.map((r) => (
@@ -86,7 +80,7 @@ export default function Dashboard() {
         <section className="card">
           <h2 className="h3">Recent payments</h2>
           {recentPayments.length === 0 ? (
-            <Empty title="No payments yet.">Confirmed payments from the treasury appear here.</Empty>
+            <Empty title="No payments yet." />
           ) : (
             <ul className="list">
               {recentPayments.map((p) => (
@@ -122,16 +116,5 @@ export default function Dashboard() {
         )}
       </section>
     </div>
-  );
-}
-
-function PolicyFooter({ policy }) {
-  if (!policy) return null;
-  const days = policy.ledgersLeft ? Math.round((policy.ledgersLeft * SECONDS_PER_LEDGER) / 86400) : null;
-  return (
-    <>
-      Payments above the limit wait for administrator approval.
-      {days != null && <> The operator permission expires in about {days} {days === 1 ? 'day' : 'days'}.</>}
-    </>
   );
 }

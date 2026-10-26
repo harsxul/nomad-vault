@@ -1,0 +1,188 @@
+/* Landing page ("Nomad Vault 2" design, 1280 wide). Everything is scoped under .landing so app pages are untouched.
+   Colours come from the Frame 11 tokens in server/public/tokens.css (loaded by styles.css). */
+
+.landing {
+  --lp-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --lp-content: 1192px;
+  color: var(--nv-charcoal);
+  overflow-x: clip; /* the phone map is wider than the screen on purpose */
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.landing) { scroll-behavior: smooth; }
+}
+.landing section[id] { scroll-margin-top: 16px; }
+
+.lp-wrap { max-width: calc(var(--lp-content) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+.lp-center { text-align: center; }
+
+/* ---------- Type ---------- */
+.lp-brand, .lp-nav a, .lp-btn, .lp-h1, .lp-h2, .lp-sub, .lp-tag__who, .lp-card__num, .lp-card__title, .lp-footer__nav a {
+  font-family: var(--nv-font-display);
+  font-weight: 900;
+  font-synthesis: none; /* Archivo Black ships one weight */
+}
+.lp-h1 { color: var(--nv-cobalt); font-size: clamp(34px, 8.4vw, 72px); line-height: 1.05; letter-spacing: -0.01em; margin: 0; }
+.lp-h1 span, .lp-h2 span, .lp-card__title span { display: block; } /* design line breaks */
+.lp-h2 { color: var(--nv-cobalt); font-size: clamp(30px, 5vw, 57px); line-height: 1.05; letter-spacing: -0.01em; margin: 0; }
+.lp-h2--yellow { color: var(--nv-yellow); }
+.lp-sub { font-size: 19px; line-height: 1.2; max-width: 500px; margin: 26px auto; }
+.lp-sub--light { color: var(--nv-off-white); max-width: 650px; margin-top: 34px; }
+.lp-sub--cobalt { color: var(--nv-cobalt); }
+
+/* ---------- Buttons ---------- */
+.lp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 14px;
+  min-height: 62px; padding: 0 30px; border-radius: 999px;
+  font-size: 19px; line-height: 1; text-decoration: none; white-space: nowrap;
+  transition: transform 160ms var(--lp-ease), background-color 160ms var(--lp-ease), color 160ms var(--lp-ease);
+}
+.lp-btn:active { transform: scale(0.97); }
+.lp-btn--lg { min-height: 64px; font-size: 21px; }
+.lp-btn--cobalt { background: var(--nv-cobalt); color: var(--nv-off-white); }
+.lp-btn--yellow { background: var(--nv-yellow); color: var(--nv-cobalt); }
+.lp-btn--cream { background: var(--nv-off-white); color: var(--nv-cobalt); }
+.lp-btn--soft { background: var(--nv-light-blue); color: var(--nv-cobalt); }
+@media (hover: hover) {
+  .lp-btn--cobalt:hover { background: var(--nv-charcoal); }
+  .lp-btn--cream:hover, .lp-btn--soft:hover { background: var(--nv-yellow); }
+  .lp-btn--yellow:hover { background: var(--nv-off-white); }
+}
+.lp-btn__icon { width: 18px; height: 18px; flex: none; }
+.lp-section--cobalt :focus-visible, .lp-footer :focus-visible { outline-color: var(--nv-yellow); }
+
+/* ---------- Header ---------- */
+.lp-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 28px; padding-bottom: 28px; }
+.lp-brand { font-size: 30px; line-height: 1; color: var(--nv-charcoal); text-decoration: none; white-space: nowrap; }
+.lp-nav { display: flex; align-items: center; gap: 50px; height: 67px; padding: 0 30px; border-radius: 999px; background: var(--nv-light-blue); }
+.lp-nav a { font-size: 19px; color: var(--nv-charcoal); text-decoration: none; white-space: nowrap; }
+.lp-nav a:hover { color: var(--nv-cobalt); }
+
+/* ---------- Hero and map ---------- */
+.lp-hero { padding-top: 70px; overflow: hidden; }
+.lp-map { position: relative; max-width: 1280px; margin: 58px auto 0; }
+.lp-map__dots { display: block; width: 100%; height: auto; }
+.lp-map__tags { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+.lp-tag {
+  position: absolute; left: var(--x); top: var(--y);
+  display: flex; flex-direction: column; gap: 3px; padding: 9px 12px;
+  background: var(--nv-yellow); color: var(--nv-cobalt); white-space: nowrap; text-align: left;
+  animation: lp-tag-in 360ms var(--lp-ease) both;
+  animation-delay: calc(var(--i) * 70ms); /* four tags: done by 570ms */
+}
+.lp-tag__who { font-size: 18px; line-height: 1.1; }
+.lp-tag__amount { font: 700 16px/1.2 var(--nv-font-body); font-variant-numeric: tabular-nums; }
+@keyframes lp-tag-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- Sections ---------- */
+.lp-section { padding: 88px 0 106px; }
+.lp-section--soft { background: var(--nv-light-blue); }
+.lp-section--cobalt { background: var(--nv-cobalt); padding-top: 110px; }
+.lp-section--plain { background: var(--nv-off-white); padding-top: 100px; padding-bottom: 126px; }
+.lp-section .lp-h2 + .lp-cards { margin-top: 64px; }
+
+/* ---------- Cards (01/02/03) ---------- */
+.lp-cards {
+  list-style: none; margin: 0 auto; padding: 0; max-width: 1172px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; text-align: left;
+}
+.lp-card { position: relative; border-radius: 16px; overflow: hidden; padding: 24px 0 30px; }
+.lp-card--white { background: var(--surface); }
+.lp-card--yellow { background: var(--nv-yellow); padding-top: 26px; }
+.lp-card__num { position: absolute; top: 30px; left: 26px; font-size: 20px; line-height: 1; color: var(--nv-cobalt); }
+.lp-card__art { display: block; width: 100%; height: auto; }
+.lp-card__title { margin: 8px 32px 14px; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.02; color: var(--nv-charcoal); }
+.lp-card__body { margin: 0 32px; font-size: 18px; line-height: 1.35; color: var(--ink-muted); }
+.lp-card--yellow .lp-card__title { margin: 4px 28px 14px; font-size: clamp(28px, 3.1vw, 40px); line-height: 1; }
+.lp-card--yellow .lp-card__body { margin: 0 28px; color: var(--nv-charcoal); }
+
+/* ---------- See it in action ---------- */
+.lp-views { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; margin: 62px 0 56px; }
+.lp-stage { position: relative; max-width: 833px; margin: 0 auto 40px; }
+.lp-shot { display: block; width: 100%; height: auto; border-radius: 10px; }
+.lp-note { position: absolute; color: var(--nv-off-white); }
+.lp-note p { margin: 0; font: 400 20px/1.3 var(--nv-font-body); text-align: center; }
+.lp-note svg { display: block; overflow: visible; fill: none; stroke: var(--nv-yellow); stroke-width: 6; stroke-linecap: round; }
+.lp-note--payday { left: calc(100% + 22px); top: 14px; width: 183px; }
+.lp-note--payday p { width: 140px; margin: 0 0 8px 26px; }
+.lp-note--private { right: calc(100% + 43px); top: 450px; width: 116px; }
+.lp-note--private p { margin-bottom: 22px; }
+
+/* ---------- Closing ---------- */
+.lp-closing { background: var(--nv-light-blue); padding-top: 120px; }
+.lp-closing .lp-sub { margin: 34px auto 34px; }
+.lp-closing__globe { display: block; width: 100%; height: auto; margin-top: 6px; }
+
+/* ---------- Footer ---------- */
+.lp-footer { background: var(--nv-cobalt); color: var(--nv-off-white); padding: 64px 0 30px; }
+.lp-footer__inner { display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'brand nav' 'brand copy'; gap: 64px 32px; align-items: start; }
+.lp-footer__brand { grid-area: brand; }
+.lp-footer__brand .lp-brand { color: var(--nv-off-white); font-size: 28px; }
+.lp-footer__brand p { margin: 12px 0 0; font-size: 14px; opacity: 0.8; }
+.lp-footer__nav { grid-area: nav; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px 50px; }
+.lp-footer__nav a { font-size: 20px; color: var(--nv-off-white); text-decoration: none; }
+.lp-footer__nav a:hover { text-decoration: underline; }
+.lp-footer__copy { grid-area: copy; margin: 0; font-size: 20px; text-align: right; }
+
+/* ---------- Narrower screens ---------- */
+@media (max-width: 1199px) {
+  /* No room beside the screenshot: the side notes sit under it, without the squiggles. */
+  .lp-stage { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 40px; }
+  .lp-shot { flex: 0 0 100%; }
+  .lp-note { position: static; width: auto; }
+  .lp-note p, .lp-note--payday p { width: auto; margin: 10px 0 0; font-size: 18px; }
+  .lp-note svg { display: none; }
+}
+@media (max-width: 1023px) {
+  .lp-header { flex-wrap: wrap; padding-top: 20px; padding-bottom: 20px; }
+  .lp-nav { order: 3; width: 100%; justify-content: center; gap: 32px; height: 52px; }
+  .lp-nav a { font-size: 16px; }
+}
+@media (max-width: 900px) {
+  .lp-cards { grid-template-columns: minmax(0, 1fr); max-width: 480px; }
+  .lp-card__title { font-size: 30px; }
+  .lp-card--yellow .lp-card__title { font-size: 34px; }
+}
+@media (max-width: 640px) {
+  .lp-brand { font-size: 24px; }
+  .lp-header__cta { min-height: 44px; padding: 0 18px; font-size: 16px; }
+  .lp-nav { gap: 0; justify-content: space-evenly; padding: 0 4px; height: 48px; }
+  .lp-nav a { font-size: 13px; padding: 0 6px; }
+  .lp-hero { padding-top: 40px; }
+  .lp-sub { font-size: 16px; margin: 18px auto 22px; }
+  .lp-sub--light { margin-top: 20px; }
+
+  /* Zoom the map on the Atlantic so the tags stay readable; Singapore is off-screen there. */
+  .lp-map { width: 230%; max-width: none; margin: 36px 0 0 -36%; }
+  .lp-tag { left: var(--mx); top: var(--my); padding: 6px 8px; gap: 2px; }
+  .lp-tag__who { font-size: 13px; }
+  .lp-tag__amount { font-size: 12px; }
+  .lp-tag--wide-only { display: none; }
+
+  .lp-section, .lp-section--cobalt, .lp-section--plain { padding: 64px 0 72px; }
+  .lp-section .lp-h2 + .lp-cards { margin-top: 32px; }
+  .lp-card__title { font-size: 28px; margin-left: 24px; margin-right: 24px; }
+  .lp-card__body { font-size: 16px; margin: 0 24px; }
+  .lp-card--yellow .lp-card__title { font-size: 30px; margin-left: 24px; margin-right: 24px; }
+  .lp-card--yellow .lp-card__body { margin: 0 24px; }
+  .lp-card__num { left: 22px; top: 24px; }
+
+  .lp-btn--lg { min-height: 52px; font-size: 16px; padding: 0 18px; }
+  .lp-views { gap: 10px; margin: 32px 0 32px; }
+  .lp-views .lp-btn { padding: 0 16px; font-size: 15px; }
+  .lp-stage { margin-bottom: 32px; }
+  .lp-shot { border-radius: 8px; }
+
+  .lp-closing { padding-top: 64px; }
+  .lp-closing .lp-sub { margin: 18px auto 24px; }
+  .lp-closing__globe { height: 140px; object-fit: cover; object-position: 50% 100%; }
+
+  .lp-footer { padding: 48px 0 28px; }
+  .lp-footer__inner { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'brand' 'nav' 'copy'; gap: 28px; }
+  .lp-footer__nav { justify-content: flex-start; gap: 12px 24px; }
+  .lp-footer__nav a { font-size: 16px; }
+  .lp-footer__copy { text-align: left; font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-tag { animation: none; }
+  .lp-btn { transition: none; }
+}

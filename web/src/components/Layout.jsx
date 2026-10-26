@@ -11,6 +11,9 @@ export default function Layout() {
   const { pathname } = useLocation();
   const inAdmin = pathname.startsWith('/app');
 
+  // The landing page brings its own header, main and footer.
+  if (pathname === '/') return <Outlet />;
+
   return (
     <div className="shell">
       <a className="skip-link" href="#main">Skip to content</a>
@@ -37,7 +40,7 @@ export default function Layout() {
       </main>
       <footer className="footer">
         <div className="container small muted">
-          Demo on Stellar testnet. Testnet XLM stands in for EURC. Nomad Vault is not a bank account and moves no real money.
+          Demo on Stellar testnet. Payments settle in Circle's testnet USDC. Nomad Vault is not a bank account and moves no real money.
         </div>
       </footer>
     </div>

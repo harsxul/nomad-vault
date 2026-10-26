@@ -52,8 +52,8 @@ p:last-child { margin-bottom: 0; }
 .eyebrow { font: 700 14px/145% var(--nv-font-body); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 0 0 4px; }
 .block { display: block; }
 .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.figure { font-size: 32px; line-height: 110%; display: block; margin: 0 0 8px; font-variant-numeric: tabular-nums; }
-.figure-unit { font: 400 16px/150% var(--nv-font-body); }
+.figure { font-size: clamp(24px, 2.2vw, 32px); line-height: 110%; display: block; margin: 0 0 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.figure-unit { font: 700 14px/150% var(--nv-font-body); color: var(--ink-muted); letter-spacing: 0.02em; }
 .figure-pair { font-weight: 700; }
 .error-text { color: var(--ink); font-weight: 700; }
 .error-text::before { content: '! '; }
@@ -191,7 +191,7 @@ p:last-child { margin-bottom: 0; }
 .action-bar p { margin: 0; flex: 1 1 280px; }
 
 /* ---------- States, notices, modal ---------- */
-.state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 40px 16px; }
+.state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 24px 16px; }
 .state-title { font-weight: 700; font-size: 18px; }
 .state--error { background: var(--highlight); border-radius: var(--radius); }
 .state--error .muted { color: var(--ink); }
