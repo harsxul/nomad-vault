@@ -28,6 +28,18 @@
 }
 .pp-ring { width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid var(--nv-yellow); }
 
+/* The roaming plane in the page margins below the hero (components/RoamingPlane.jsx). */
+.rp-layer {
+  position: fixed; inset: 0; z-index: 5; /* above content, below native <dialog> modals (top layer) */
+  overflow: hidden; pointer-events: none; visibility: hidden; opacity: 0; contain: strict;
+}
+.rp-layer.is-on { visibility: visible; }
+.rp-layer > * { position: absolute; top: 0; left: 0; }
+.rp-plane img { display: block; }
+.rp-dash { width: 6px; height: 2px; margin: -1px 0 0 -3px; border-radius: 1px; background: #587eff; }
+.rp-plane img, .rp-coin { filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.7)) drop-shadow(0 2px 3px rgba(10, 22, 70, 0.3)); }
+.rp-spark { position: absolute; opacity: 0; transform-origin: 0 50%; }
+
 @media (max-width: 639px) {
-  .pp-map, .pp-globe { display: none; }
+  .pp-map, .pp-globe, .rp-layer { display: none; }
 }

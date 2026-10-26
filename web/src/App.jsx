@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import PaperPlane from './components/PaperPlane.jsx';
+import RoamingPlane from './components/RoamingPlane.jsx';
 import { NetworkProvider } from './lib/network.jsx';
 import Landing from './pages/Landing.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -16,7 +17,7 @@ export default function App() {
     <NetworkProvider>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<><PaperPlane /><Landing /></>} />
+          <Route index element={<><PaperPlane /><RoamingPlane /><Landing /></>} />
           <Route path="app" element={<Dashboard />} />
           <Route path="app/contractors" element={<Contractors />} />
           <Route path="app/payroll" element={<PayrollHistory />} />
