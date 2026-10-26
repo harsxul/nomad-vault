@@ -1,4 +1,5 @@
 // Loading, empty and error states. Copy stays plain: say what happened and what did not.
+import { getApiMessage } from '../lib/api.js';
 
 export function Loading({ label = 'Loading…' }) {
   return (
@@ -23,7 +24,7 @@ export function ErrorState({ title, error, onRetry }) {
   return (
     <div className="state state--error" role="alert">
       <p className="state-title">{title}</p>
-      {error?.message && <p className="muted">{error.message}</p>}
+      {error && <p className="muted">{getApiMessage(error)}</p>}
       {onRetry && (
         <button type="button" className="btn btn-secondary" onClick={() => onRetry()}>
           Try again

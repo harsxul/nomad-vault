@@ -37,7 +37,7 @@ export default function Layout() {
       </main>
       <footer className="footer">
         <div className="container small muted">
-          Demo on Stellar testnet. Testnet XLM stands in for EURC. Nomad Vault is not a bank account and moves no real money.
+          Demo amounts are shown in USDC. Settlement currently uses testnet XLM; no real money is moved.
         </div>
       </footer>
     </div>
