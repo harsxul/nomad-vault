@@ -2,6 +2,12 @@
 
 **Hire anywhere. Pay without borders.** One USDC treasury for a company's global team, and a personal vault every contractor owns and keeps between jobs. Built on Stellar in 48 hours for HackMeridian Lisbon 2026 (Genesis track, Stellar Composed).
 
+## Links
+
+- Pitch deck: shared in the submission
+- Demo video: shared in the submission
+- Hosted preview (frontend with sample data): see submission. Real testnet payments run with the local setup below.
+
 ## The problem
 
 Companies that hire contractors abroad pay through slow, expensive cross-border rails. The contractor's money then sits in an employer or platform account they do not control. Moving payroll on-chain fixes speed and cost, but on a public ledger everyone can read everyone's salary.
@@ -10,7 +16,7 @@ Companies that hire contractors abroad pay through slow, expensive cross-border 
 
 1. **Fund your treasury.** The company treasury is a smart account on Stellar holding Circle's testnet USDC.
 2. **Set up your team.** The admin adds a contractor and sends an invite link. The contractor opens it, a vault (a Stellar account) is created in their browser, funded, and given a USDC trustline. Only the public address reaches our server.
-3. **Approve and pay.** The admin reviews the month's payroll and approves it. A payroll operator key pays each contractor, but only inside a daily limit that the treasury contract itself enforces. Anything above the limit is refused on-chain and waits for an admin signature.
+3. **Approve and pay.** The admin reviews the month's payroll and approves it. A payroll operator key pays each contractor, but only inside a daily limit that the treasury contract itself enforces. Anything above the limit is refused by the treasury contract's policy (no funds move) and waits for an admin signature.
 4. **Private payments.** Stellar Private Payments (a zero-knowledge pool by Nethermind) lets a company pay salaries without publishing amounts and recipients. We deployed it ourselves and ran it end to end on futurenet (see below).
 
 ## Live on Stellar testnet
@@ -64,7 +70,7 @@ Browser (React, web/)                     Backend (Node, server/)               
 
 ## Run it locally
 
-Requirements: Node 22.5 or newer (uses the built-in `node:sqlite`), the [Stellar CLI](https://developers.stellar.org/docs/tools/cli), and internet access to Stellar testnet.
+Requirements: Node 22.13 or newer (uses the built-in `node:sqlite`), the [Stellar CLI](https://developers.stellar.org/docs/tools/cli), and internet access to Stellar testnet.
 
 1. Create and fund the demo keys (testnet only):
    ```bash
@@ -91,7 +97,7 @@ Environment variables (all optional):
 1. Landing page, then **Explore Demo**.
 2. Dashboard: treasury balance in USDC, the operator's daily limit, next payroll.
 3. Contractors: add one, copy the invite link, open it in a private window, create the vault (key, funding, USDC trustline), land in the contractor's vault.
-4. Payroll: **Review payroll**, approve, execute. Watch each payment move through "Policy checked, Submitted, Confirmed". When the daily limit is reached the policy refuses the next one on-chain; approve it as admin.
+4. Payroll: **Review payroll**, approve, execute. Watch each payment move through "Policy checked, Submitted, Confirmed". When the daily limit is reached the treasury contract's policy refuses the next one; approve it as admin.
 5. Open any transaction on stellar.expert. Open the contractor vault to see the money arrive.
 
 `npm run demo:reset` in `server/` gives a fresh treasury and clean demo data.
