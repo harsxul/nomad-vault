@@ -4,8 +4,10 @@
 
 ## Links
 
-- **Live demo:** https://harsxul.github.io/nomad-vault/ (talks to our real Stellar testnet backend while it is online; otherwise it shows a snapshot of the same real testnet data, with working transaction links)
-- **Live backend, direct:** https://lows-institute-tiles-math.trycloudflare.com (served from the team laptop during judging)
+Two ways to open the demo, use whichever you like:
+
+- **Live demo with real payments:** https://lows-institute-tiles-math.trycloudflare.com. The full app on our real backend; every payroll run sends real Stellar testnet USDC. Served from the team laptop during judging.
+- **Always-on demo:** https://harsxul.github.io/nomad-vault/. Hosted on GitHub Pages. It uses the same real backend while that is online; otherwise it shows a snapshot of our real testnet data with working transaction links, and payroll runs are simulated.
 - **Repo:** https://github.com/harsxul/nomad-vault
 - Pitch deck and demo video: linked in the HackMeridian submission
 
