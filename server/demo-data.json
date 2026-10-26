@@ -49,6 +49,39 @@
       "status": "invited",
       "address": null,
       "nextPaymentDate": "2026-10-28"
+    },
+    {
+      "id": "ctr_aiko",
+      "displayName": "Aiko Tanaka",
+      "email": "aiko@example.com",
+      "countryLabel": "Japan",
+      "amountMinor": "4500000000",
+      "frequency": "monthly",
+      "status": "active",
+      "address": "GBR5APX6F6VVWAEL5MUADEJKUYCFA74KSKUFVUBTI5A737SZN5CMQRQQ",
+      "nextPaymentDate": "2026-10-28"
+    },
+    {
+      "id": "ctr_lucas",
+      "displayName": "Lucas Moreau",
+      "email": "lucas@example.com",
+      "countryLabel": "Canada",
+      "amountMinor": "3900000000",
+      "frequency": "monthly",
+      "status": "active",
+      "address": "GCCRJN4B4CEZOMVLU4XCSPHKJ3RFKGVQXKI5FV6OTYU4M2CRK5TI35OE",
+      "nextPaymentDate": "2026-10-28"
+    },
+    {
+      "id": "ctr_amara",
+      "displayName": "Amara Okafor",
+      "email": "amara@example.com",
+      "countryLabel": "Nigeria",
+      "amountMinor": "3600000000",
+      "frequency": "monthly",
+      "status": "paused",
+      "address": "GDSSQ2ESYOSGZXYKIU5ZLV6MRGIFSIVUTENCXKP5CRU4MHKOFH4ZSRR4",
+      "nextPaymentDate": "2026-10-28"
     }
   ],
   "privateRegistrations": [

@@ -27,7 +27,7 @@ async function classic(kp, op) {
 }
 
 // Accounts need a trustline before they can hold USDC: the fee payer (buys it) and the demo contractor vaults (receive it).
-for (const alias of [T.feePayerAlias || 'nv-employer', 'nv-maya', 'nv-mateo', 'nv-jonas']) {
+for (const alias of [T.feePayerAlias || 'nv-employer', 'nv-maya', 'nv-mateo', 'nv-jonas', 'nv-aiko', 'nv-lucas', 'nv-amara']) {
   let kp;
   try { kp = keypair(alias); } catch { console.log('skip trustline', alias, '(no local key; the demo vaults already trust USDC)'); continue; }
   if (!(await usdcBalance(kp.publicKey()))) { await classic(kp, Operation.changeTrust({ asset: usdc })); console.log('trustline', alias); }
