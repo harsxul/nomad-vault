@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { StrKey } from '@stellar/stellar-sdk';
 import { cfg, keypair, txLink, payFromTreasury, balanceOf, accountExists, treasuryTransfers, policyState } from './stellar.mjs';
 import { db, now, newId, newToken } from './db.mjs';
-import { parseAmount, formatAmount, sumMinor, draftItems, runStatusFromItems, canApprove, canExecute, sendable, stepsFor, FAILURE_MESSAGES } from './payroll.mjs';
+import { parseAmount, formatAmount, sumMinor, draftItems, runStatusFromItems, canExecute, sendable, stepsFor, FAILURE_MESSAGES } from './payroll.mjs';
 
 const PORT = Number(process.env.PORT || 8787);
 const demo = JSON.parse(readFileSync(new URL('./demo-data.json', import.meta.url)));
@@ -111,7 +111,8 @@ const json = async (req) => {
 
 const routes = [
   ['GET', /^\/api\/network-config$/, async () => ({
-    network: cfg.network, asset: cfg.asset.code, explorer: cfg.explorer, treasury: T.account, privatePool: cfg.privatePayments.pool,
+    network: cfg.network, asset: cfg.asset.code, assetIssuer: cfg.asset.issuer, horizonUrl: cfg.horizonUrl, networkPassphrase: cfg.networkPassphrase,
+    explorer: cfg.explorer, treasury: T.account, privatePool: cfg.privatePayments.pool,
   })],
 
   ['GET', /^\/api\/dashboard$/, async () => {
@@ -188,8 +189,10 @@ const routes = [
     const { vaultAddress } = await json(req);
     if (!StrKey.isValidEd25519PublicKey(String(vaultAddress || ''))) fail(400, 'That vault address is not valid');
     if (!(await accountExists(vaultAddress))) fail(409, 'The vault is not active on Stellar yet. Fund it first.', 'vault_not_funded');
-    db.prepare('UPDATE invitations SET accepted_at = ? WHERE token = ?').run(now(), token);
-    db.prepare("UPDATE contractors SET status = 'active', vault_address = ? WHERE id = ?").run(vaultAddress, inv.contractor_id);
+    // Activate once: a second (or sibling) invitation must never replace an active vault address.
+    const activated = db.prepare("UPDATE contractors SET status = 'active', vault_address = ? WHERE id = ? AND status = 'invited'").run(vaultAddress, inv.contractor_id);
+    if (!activated.changes) fail(410, 'This vault is already set up', 'used');
+    db.prepare('UPDATE invitations SET accepted_at = ? WHERE contractor_id = ? AND accepted_at IS NULL').run(now(), inv.contractor_id);
     return { contractor: contractorJson(getContractor(inv.contractor_id)) };
   }],
 
@@ -220,10 +223,11 @@ const routes = [
   ['GET', /^\/api\/payroll-runs\/([\w-]+)$/, async (req, [id]) => ({ run: await runJson(getRun(id)) })],
 
   ['POST', /^\/api\/payroll-runs\/([\w-]+)\/approve$/, async (req, [id]) => {
-    const run = getRun(id);
-    if (!canApprove(run)) fail(409, 'This payroll run can no longer be approved', 'invalid_state');
     const { approvedBy } = await json(req);
-    db.prepare("UPDATE payroll_runs SET status = 'approved', approved_by = ?, approved_at = ? WHERE id = ?").run(String(approvedBy || 'Company admin').slice(0, 60), now(), id);
+    getRun(id);
+    const r = db.prepare("UPDATE payroll_runs SET status = 'approved', approved_by = ?, approved_at = ? WHERE id = ? AND status IN ('draft', 'awaiting_approval')")
+      .run(String(approvedBy || 'Company admin').slice(0, 60), now(), id);
+    if (!r.changes) fail(409, 'This payroll run can no longer be approved', 'invalid_state');
     return { run: await runJson(getRun(id)) };
   }],
 
@@ -313,4 +317,4 @@ http.createServer(async (req, res) => {
     console.error(`${req.method} ${path}:`, e.message);
     send(res, 502, { error: 'We could not reach the Stellar network. Try again.', code: 'upstream' });
   }
-}).listen(PORT, () => console.log(`Nomad Vault backend on http://localhost:${PORT} (admin signer ${admin ? 'on, demo mode' : 'off'})`));
+}).listen(PORT, process.env.HOST || '127.0.0.1', () => console.log(`Nomad Vault backend on http://${process.env.HOST || '127.0.0.1'}:${PORT} (admin signer ${admin ? 'on, demo mode' : 'off'})`));

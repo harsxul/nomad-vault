@@ -2,7 +2,7 @@
 
 Base URL in development: `http://localhost:8787`. All bodies are JSON. Errors return `{ "error": "<plain-English message>", "code": "<machine code>" }` with a 4xx/5xx status.
 
-Money: every amount is a decimal string in token units with two decimals for display (`"5.50"`) and an integer string in base units (`amountMinor`, 7 decimals for XLM). The demo settles in testnet XLM as a stand-in for EURC; `asset` tells the UI which code to show.
+Money: every amount is a decimal string in token units with two decimals for display (`"5.50"`) and an integer string in base units (`amountMinor`, 7 decimals for USDC). The demo settles in Circle's testnet USDC through its Stellar Asset Contract; `asset` tells the UI which code to show. Contractor vaults need a USDC trustline, which the invite flow adds in the browser.
 
 The backend stores product metadata only. It holds one policy-limited payroll operator key; it never holds contractor keys.
 
@@ -21,14 +21,14 @@ The backend stores product metadata only. It holds one policy-limited payroll op
 
 `GET /api/network-config`
 ```json
-{ "network": "testnet", "asset": "XLM", "explorer": "https://stellar.expert/explorer/testnet", "treasury": "C...", "privatePool": "C..." }
+{ "network": "testnet", "asset": "USDC", "assetIssuer": "G...", "horizonUrl": "https://horizon-testnet.stellar.org", "networkPassphrase": "...", "explorer": "https://stellar.expert/explorer/testnet", "treasury": "C...", "privatePool": "C..." }
 ```
 
 `GET /api/dashboard`
 ```json
 {
   "company": { "id": "northstar", "name": "Northstar Labs" },
-  "network": "testnet", "asset": "XLM", "latestLedger": 5385050,
+  "network": "testnet", "asset": "USDC", "latestLedger": 5385050,
   "treasury": { "address": "C...", "link": "https://...", "balance": "176.00" },
   "nextPayroll": { "total": "18.30", "contractorCount": 3, "funded": true, "date": "2026-10-28" },
   "payrollPolicy": { "rule": "payroll", "dailyLimit": "25.00", "spentInWindow": "0.00", "remaining": "25.00", "windowLedgers": 17280, "ledgersLeft": 120000 },
@@ -47,7 +47,7 @@ Contractor:
 ```json
 {
   "id": "ctr_maya", "displayName": "Maya Silva", "email": "maya@example.com", "countryLabel": "Portugal",
-  "amount": "5.50", "amountMinor": "55000000", "asset": "XLM", "frequency": "monthly",
+  "amount": "5.50", "amountMinor": "55000000", "asset": "USDC", "frequency": "monthly",
   "status": "active", "vaultAddress": "G..." , "vaultShort": "GCXG…SJR3",
   "nextPaymentDate": "2026-10-28", "createdAt": "..."
 }
@@ -65,7 +65,7 @@ Contractor:
 
 `GET /api/invitations/:token` → `{ "company": { "name" }, "contractor": Contractor, "expiresAt", "accepted": false }`. 404 if unknown, 410 if expired or used.
 
-`POST /api/invitations/:token/accept` body `{ "vaultAddress": "G..." }` → `{ "contractor": Contractor }` (status becomes `active`). The demo creates the vault in the browser: a fresh Stellar keypair funded by testnet friendbot. Passkey smart accounts are the intended production version.
+`POST /api/invitations/:token/accept` body `{ "vaultAddress": "G..." }` → `{ "contractor": Contractor }` (status becomes `active`). The demo creates the vault in the browser: a fresh Stellar keypair funded by testnet friendbot, plus a USDC trustline signed in the browser. Passkey smart accounts are the intended production version.
 
 ### Payroll runs
 
@@ -78,7 +78,7 @@ Contractor:
 PayrollRun:
 ```json
 {
-  "id": "run_...", "period": "2026-10", "asset": "XLM", "status": "draft",
+  "id": "run_...", "period": "2026-10", "asset": "USDC", "status": "draft",
   "total": "18.30", "totalMinor": "183000000",
   "treasuryBefore": "176.00", "treasuryAfter": "157.70",
   "policy": { "dailyLimit": "25.00", "remaining": "25.00", "withinLimit": true },
@@ -101,6 +101,6 @@ PayrollRun:
 
 ### Contractor vault
 
-`GET /api/vaults/:address` → `{ "address", "exists": true, "balance": "15.50", "receivedTotal": "5.50", "asset": "XLM", "payments": [Payment with "fromCompany": "Northstar Labs"] }`
+`GET /api/vaults/:address` → `{ "address", "exists": true, "balance": "15.50", "receivedTotal": "5.50", "asset": "USDC", "payments": [Payment with "fromCompany": "Northstar Labs"] }`
 
 `POST /api/demo/fund-vault` body `{ "address": "G..." }` → funds a new testnet account through friendbot. `{ "funded": true }`.

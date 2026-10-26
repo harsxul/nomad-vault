@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { endpoints } from '../lib/api.js';
 import { useApi } from '../lib/useApi.js';
 import { day, frequency } from '../lib/format.js';
-import { getOrCreateVaultKey } from '../lib/vaultKey.js';
+import { addTrustline, getOrCreateVaultKey } from '../lib/vaultKey.js';
+import { useNetwork } from '../lib/network.jsx';
 import Amount from '../components/Amount.jsx';
 import { Tag } from '../components/StatusBadge.jsx';
 import Stepper from '../components/Stepper.jsx';
@@ -11,13 +12,14 @@ import { Empty, ErrorState, Loading } from '../components/States.jsx';
 
 const SETUP_STEPS = [
   { key: 'key', label: 'Vault key created in this browser' },
-  { key: 'fund', label: 'Vault opened on Stellar testnet' },
+  { key: 'fund', label: 'Vault opened on Stellar testnet, ready for USDC' },
   { key: 'link', label: 'Vault linked to your agreement' },
 ];
 
 export default function Invite() {
   const { token } = useParams();
   const navigate = useNavigate();
+  const network = useNetwork();
   const { data, loading, error, reload } = useApi(() => endpoints.invitation(token), token);
   const [progress, setProgress] = useState(null); // index of the step in progress, or null
   const [setupError, setSetupError] = useState(null);
@@ -45,6 +47,7 @@ export default function Invite() {
       const key = await getOrCreateVaultKey(contractor.id);
       setProgress(1);
       await endpoints.fundVault(key.publicKey);
+      await addTrustline(key, network);
       setProgress(2);
       const res = await endpoints.acceptInvitation(token, key.publicKey);
       setProgress(3);
@@ -75,7 +78,6 @@ export default function Invite() {
           <dd>
             <Amount value={contractor.amount} asset={contractor.asset} />, {frequency(contractor.frequency).toLowerCase()}.
             {contractor.nextPaymentDate && <> Next payment expected on {day(contractor.nextPaymentDate)}.</>}
-            {contractor.asset === 'XLM' && <span className="small muted block">The demo pays in testnet XLM as a stand-in for EURC.</span>}
           </dd>
         </div>
         <div>

@@ -84,7 +84,7 @@ export default function AddContractor({ onCreated, onDone }) {
 
       {step === 1 && (
         <>
-          <Field id="amount" label={`Amount per payment${asset ? ` (${asset})` : ''}`} error={errors.amount} hint={asset === 'XLM' ? 'The demo pays in testnet XLM as a stand-in for EURC.' : undefined}>
+          <Field id="amount" label={`Amount per payment${asset ? ` (${asset})` : ''}`} error={errors.amount}>
             <input id="amount" className="input num" inputMode="decimal" value={form.amount} onChange={set('amount')} placeholder="0.00" />
           </Field>
           <div className="field">

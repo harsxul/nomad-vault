@@ -2,23 +2,26 @@
   "network": "testnet",
   "networkPassphrase": "Test SDF Network ; September 2015",
   "rpcUrl": "https://soroban-testnet.stellar.org",
+  "horizonUrl": "https://horizon-testnet.stellar.org",
   "explorer": "https://stellar.expert/explorer/testnet",
   "asset": {
-    "code": "XLM",
-    "contract": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
-    "decimals": 7
+    "code": "USDC",
+    "issuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+    "contract": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "decimals": 7,
+    "note": "Circle testnet USDC (Stellar Asset Contract)"
   },
   "treasury": {
-    "account": "CDIWIMWDVB3PGBHCSMQVFT7T6NR42C2YEM5WOTPLXKH5T75RD4KISR6D",
+    "account": "CCBW5GLO53X2K5H6ACMQDNWHWJXPCWTJGE5YW6EZVVRIP3AE6QP27X22",
     "accountWasmHash": "1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a",
     "ed25519Verifier": "CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4",
     "spendingLimitPolicy": "CABXBYJNZ7IUW4G3D6BND5YCAQF3ASSDMDAOKQQ63UYFSO7WUU2TIP5G",
     "payrollRuleId": 1,
-    "deployedFromLedger": 5385151,
+    "deployedFromLedger": 5397404,
     "feePayerAlias": "nv-employer",
     "spikeAccount": "CDOTGUOHQIZMIRA7WEKW4NMXH23LPPTPTOWLP6WA7ZV2AMQDUQRIME6X",
-    "setupTx": "0ea52da638d254affec3cdb755bf75b8d3ead56feb72e80f03e0cf26ff50dfc9",
-    "dailyLimitMinor": "200000000"
+    "setupTx": "8bcb33f52e61629ebaf7af79363a019fc2e28737f5d8f7c41ef2641117f715c0",
+    "dailyLimitMinor": "10000000000"
   },
   "privatePayments": {
     "source": "NethermindEth/stellar-private-payments tag cli-v0.2.0 (8e637fe), deployed by us",

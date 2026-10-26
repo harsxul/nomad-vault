@@ -58,7 +58,7 @@ export default function Vault() {
           {vault.loading && <p className="muted">Checking balance…</p>}
           {vault.error && <p className="small error-text">We could not read your balance right now. {vault.error.message}</p>}
           {vault.data && <Amount value={vault.data.receivedTotal ?? vault.data.balance} asset={asset} className="figure" />}
-          {vault.data && <p className="small">Total balance {vault.data.balance} {asset}{asset === 'XLM' ? ', including free testnet funds' : ''}.</p>}
+          {vault.data && <p className="small">Total balance {vault.data.balance} {asset}.</p>}
         </StatCard>
 
         <StatCard label="Latest compensation" footer={latest && <TxLink href={latest.link}>Confirmed on Stellar</TxLink>}>
