@@ -116,4 +116,6 @@ Everything in this repository was written during the hackathon (25 to 26 Oct 202
 
 ## Team
 
-[names]
+- **Augustin** (captain): full stack developer, integration engineer, product owner.
+- **Karina Postempskaia**: UX/UI and web designer with a background in marketing; landing page design and hosted deployment.
+- **Harshul Bhatt**: AI and backend engineer; smart-account treasury, spending policy and USDC payroll engine.
