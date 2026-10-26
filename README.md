@@ -6,7 +6,7 @@
 
 - Pitch deck: shared in the submission
 - Demo video: shared in the submission
-- Hosted preview (frontend with sample data): see submission. Real testnet payments run with the local setup below.
+- Live demo: https://nomad-vault.vercel.app (hosted frontend with sample data; real testnet payments run with the local setup below)
 
 ## The problem
 
