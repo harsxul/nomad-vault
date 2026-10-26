@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import '../paperplane.css';
 
-// The "cursor" roaming the page margins below the hero: short curved glides near the side gutters,
-// towing its dashed trail and three tumbling coins, resting in a margin with a spark. It hides while the
-// hero map (.lp-map, which has its own plane) is in view. Flights are precomputed WAAPI transform keyframes.
+// The "cursor" roaming the page: short curved glides that enter from a viewport edge and land in a side gutter,
+// towing its dashed trail and three tumbling coins. On landing a spark pops and the formation fades out, so it
+// never sits still. Flights are precomputed WAAPI keyframes: no per-frame JavaScript, no React renders.
 
 // Sizes in SVG units from public/landing/*.svg; SCALE maps them to CSS pixels.
 const SCALE = 0.5;
@@ -118,38 +118,30 @@ export default function RoamingPlane() {
     const spark = layer.querySelector('.rp-spark');
     const small = matchMedia('(max-width: 639px)');
     const calm = matchMedia('(prefers-reduced-motion: reduce)');
-    const map = document.querySelector('.lp-map');
-    let st = { anims: [] };
-    let heroInView = Boolean(map);
-    let fade = null;
+    let anims = [];
 
-    // Short hops to a resting spot in a side margin, mostly on the same side; best of a few random routes.
-    function plan(avoid) {
+    // Each flight enters from just outside an edge, glides along a side gutter and lands there; best of a few routes.
+    function plan() {
       const { rest, cross } = obstacles();
       const [vw, vh] = [innerWidth, innerHeight];
-      const from = Math.max(0, st.track.length - 320); // keep enough history for the trail at takeoff
-      const tail = st.track.points.filter((_, i) => st.track.ls[i] > from);
-      tail.unshift(pointAt(st.track, from));
-      const A = tail[tail.length - 1];
-      const hA = headingAt(st.track, st.track.length);
       let best = null;
-      for (let i = 0; i < 32; i++) {
-        const right = Math.random() < 0.8 ? A[0] > vw / 2 : A[0] < vw / 2;
+      for (let i = 0; i < 40; i++) {
+        const right = Math.random() < 0.5;
         const band = (lo, hi) => vw * (right ? 1 - rand(lo, hi) : rand(lo, hi));
-        const B = [band(0.04, 0.09), vh * rand(0.25, 0.85)];
+        const B = [band(0.05, 0.12), vh * rand(0.25, 0.85)];
         const dir = [right ? Math.cos(LAND) : -Math.cos(LAND), -Math.sin(LAND)];
+        const e = Math.floor(Math.random() * 3); // side, bottom or top edge
+        const A = e === 0 ? [right ? vw + 60 : -60, vh * rand(0.2, 0.9)] : [band(0.02, 0.2), e === 1 ? vh + 60 : -60];
+        const hA = e === 0 ? (right ? Math.PI : 0) + rand(-0.5, 0.5) : (e === 1 ? -1 : 1) * (Math.PI / 2) + rand(-0.4, 0.4);
         const [k, j] = [rand(120, 200), rand(-30, 30)];
         const W2 = [B[0] - dir[0] * k - dir[1] * j, B[1] - dir[1] * k + dir[0] * j];
-        const W1 = [band(0.03, 0.16), vh * rand(0.15, 0.85)];
-        const reach = Math.min(0.9 * dist(A, W1), 220); // caps the takeoff turn radius
+        const W1 = [band(0.03, 0.18), vh * rand(0.15, 0.85)];
+        const reach = Math.min(0.9 * dist(A, W1), 220);
         const route = hermite([A, W1, W2, B], [Math.cos(hA) * reach, Math.sin(hA) * reach], dir.map((v) => v * dist(W2, B)));
-        const track = polyline(tail.concat(route));
+        const track = polyline([[A[0] - Math.cos(hA) * 300, A[1] - Math.sin(hA) * 300], A, ...route]); // trail starts offscreen
 
-        let score = dist(A, B) < 0.25 * vh ? 30 : 0;
-        for (const [x, y] of route) {
-          if (hits(x, y, 14, cross)) score += 20;
-          if (x < 0 || x > vw || y < 0 || y > vh) score += 1;
-        }
+        let score = 0;
+        for (const [x, y] of route) if (hits(x, y, 14, cross)) score += 20;
         const end = pose(track, track.length, 0, 1, 1);
         const nose = px(PLANE.w / 2 - PLANE.ax);
         const blobs = COINS.map((c, n) => [end[DASHES + n][0], end[DASHES + n][1], px(c.w) / 2]);
@@ -158,20 +150,21 @@ export default function RoamingPlane() {
           if (hits(x, y, r, rest)) score += 50;
           if (x < r || x > vw - r || y < r || y > vh - r) score += 50;
         }
-        if (avoid) score += Math.max(0, 300 - dist(B, avoid)) / 4;
-        if (!best || score < best.score) best = { score, track, sA: track.ls[tail.length - 1], from, center: blobs.at(-1) };
+        if (!best || score < best.score) best = { score, track, sA: 300, center: blobs.at(-1) };
       }
       return best;
     }
 
-    function fly(avoid) {
-      const p = plan(avoid);
-      const T = Math.min(5000, Math.max(2600, ((p.track.length - p.sA) / SPEED) * 1000));
-      const total = T + rand(3000, 5000);
-      const odo = st.odo + p.from;
+    function fly() {
+      const p = plan();
+      const L = p.track.length - p.sA;
+      const T = Math.min(5000, Math.max(2600, (L / SPEED) * 1000));
+      const total = T + 650 + rand(1500, 3000); // land, spark, fade out, then 1.5-3 s invisible
+      const odo = rand(0, 1000);
       const frames = els.map(() => []);
       const prev = [];
-      let { roll, target } = st;
+      let target = Math.cos(headingAt(p.track, p.sA)) < 0 ? -1 : 1;
+      let roll = target;
       const push = (pts, offset) =>
         pts.forEach((pt, k) => {
           if (prev[k] !== undefined) pt[2] += Math.round((prev[k] - pt[2]) / (2 * Math.PI)) * 2 * Math.PI; // no spins at ±180°
@@ -180,11 +173,10 @@ export default function RoamingPlane() {
         });
 
       const n = Math.ceil(T / 40);
-      const L = p.track.length - p.sA;
       for (let i = 0; i <= n; i++) {
         const u = i / n;
-        const s = p.sA + (L * (1 - Math.cos(Math.PI * u))) / 2; // ease-in-out sine: gentle takeoff and landing
-        const v = (Math.PI / 2) * Math.sin(Math.PI * u) * (L / (T / 1000));
+        const s = p.sA + L * Math.sin((Math.PI * u) / 2); // ease-out sine: enters already moving, settles to land
+        const v = (Math.PI / 2) * Math.cos((Math.PI * u) / 2) * (L / (T / 1000));
         const c = Math.cos(headingAt(p.track, s));
         if (c > 0.3) target = 1;
         else if (c < -0.3) target = -1; // roll over when heading left, so the plane never flies upside down
@@ -194,64 +186,45 @@ export default function RoamingPlane() {
       push(pose(p.track, p.track.length, odo, 1, target), Math.min(1, (T + 250) / total));
       frames.forEach((f) => f.push({ ...f.at(-1), offset: 1 }));
 
-      // The yellow spark pops when the plane lands ("delivered"), then fades before the next takeoff.
-      const o0 = st.anims.length ? Number(getComputedStyle(spark).opacity) : 0;
       const at = (ms) => (T + ms) / total;
       const sparkFrames = [
-        { offset: 0, opacity: o0, transform: 'scale(1)' },
-        { offset: 200 / total, opacity: 0, transform: 'scale(0.7)' },
+        { offset: 0, opacity: 0, transform: 'scale(0.7)' },
         { offset: at(0), opacity: 0, transform: 'scale(0.7)', easing: EASE_OUT },
-        { offset: at(350), opacity: 1, transform: 'scale(1)' },
-        { offset: at(1500), opacity: 1, transform: 'scale(1)' },
-        { offset: at(1750), opacity: 0, transform: 'scale(1)' },
-        { offset: 1, opacity: 0, transform: 'scale(1)' },
+        { offset: at(250), opacity: 1, transform: 'scale(1)' },
+        { offset: 1, opacity: 1, transform: 'scale(1)' },
       ];
+      // The whole formation fades in while entering, and shrinks slightly towards the plane as it fades out.
+      const layerFrames = [
+        { offset: 0, opacity: 0, transform: 'scale(1)' },
+        { offset: 200 / total, opacity: 1, transform: 'scale(1)' },
+        { offset: at(400), opacity: 1, transform: 'scale(1)', easing: EASE_OUT },
+        { offset: at(650), opacity: 0, transform: 'scale(0.96)' },
+        { offset: 1, opacity: 0, transform: 'scale(0.96)' },
+      ];
+      layer.style.transformOrigin = `${p.center[0]}px ${p.center[1]}px`;
 
-      const old = st.anims;
-      const anims = els.map((el, k) => el.animate(frames[k], { duration: total, fill: 'forwards' }));
+      const old = anims;
+      anims = els.map((el, k) => el.animate(frames[k], { duration: total, fill: 'forwards' }));
       anims.push(spark.animate(sparkFrames, { duration: total, fill: 'forwards' }));
+      anims.unshift(layer.animate(layerFrames, { duration: total, fill: 'forwards' }));
       old.forEach((a) => a.cancel());
-      anims[0].onfinish = () => fly();
-      st = { anims, track: p.track, odo, roll: target, target, restAt: T + 300, center: p.center };
+      anims[0].onfinish = fly;
       sync();
     }
 
-    const paused = () => document.hidden || heroInView;
     function sync() {
-      st.anims.forEach((a) => (paused() ? a.pause() : a.play()));
-    }
-
-    // Startled: a pointer close to the resting plane sends it off early, away from the pointer.
-    function onMove(e) {
-      const a = st.anims[0];
-      if (!a || a.playState !== 'running' || a.currentTime < st.restAt) return;
-      if (dist(st.center, [e.clientX, e.clientY]) < 90) fly([e.clientX, e.clientY]);
-    }
-
-    // Hand over with the hero map's plane: hide (and freeze) while the map is visible, take off once it is not.
-    function onHero(visible) {
-      heroInView = visible;
-      if (!layer.classList.contains('is-on')) return;
-      const from = getComputedStyle(layer).opacity;
-      fade?.cancel();
-      fade = layer.animate([{ opacity: from }, { opacity: visible ? 0 : 1 }], { duration: 250, easing: EASE_OUT, fill: 'forwards' });
-      if (!visible && !st.anims.length) fly();
-      else sync();
+      anims.forEach((a) => (document.hidden ? a.pause() : a.play()));
     }
 
     function start() {
-      if (small.matches || calm.matches) return; // reduced motion: the hero map shows the static routes instead
-      const y = innerHeight * rand(0.45, 0.75);
-      const dir = [Math.cos(0.35), -Math.sin(0.35)];
-      st = { anims: [], track: polyline([[-100 - dir[0] * 320, y - dir[1] * 320], [-100, y]]), odo: 0, roll: 1, target: 1 };
+      if (small.matches || calm.matches) return; // reduced motion: no roaming plane
       layer.classList.add('is-on');
-      onHero(heroInView);
+      fly();
     }
 
     function stop() {
-      st.anims.forEach((a) => a.cancel());
-      st.anims = [];
-      fade?.cancel();
+      anims.forEach((a) => a.cancel());
+      anims = [];
       layer.classList.remove('is-on');
     }
 
@@ -259,20 +232,15 @@ export default function RoamingPlane() {
       stop();
       start();
     };
-    const io = map && new IntersectionObserver(([e]) => onHero(e.isIntersecting));
-    io?.observe(map);
     start();
     small.addEventListener('change', restart);
     calm.addEventListener('change', restart);
     document.addEventListener('visibilitychange', sync);
-    addEventListener('pointermove', onMove, { passive: true });
     return () => {
       stop();
-      io?.disconnect();
       small.removeEventListener('change', restart);
       calm.removeEventListener('change', restart);
       document.removeEventListener('visibilitychange', sync);
-      removeEventListener('pointermove', onMove);
     };
   }, []);
 
