@@ -253,7 +253,7 @@ export default function RoamingPlane() {
         <img
           key={c.name}
           className="rp-coin"
-          src={`/landing/${c.name}.svg`}
+          src={`${import.meta.env.BASE_URL}landing/${c.name}.svg`}
           alt=""
           width={px(c.w)}
           height={px(c.h)}
@@ -270,10 +270,10 @@ export default function RoamingPlane() {
           transformOrigin: `${px(PLANE.ax)}px ${px(PLANE.ay)}px`,
         }}
       >
-        <img src="/landing/plane.svg" alt="" width={px(PLANE.w)} height={px(PLANE.h)} />
+        <img src={`${import.meta.env.BASE_URL}landing/plane.svg`} alt="" width={px(PLANE.w)} height={px(PLANE.h)} />
         <img
           className="rp-spark"
-          src="/landing/spark.svg"
+          src={`${import.meta.env.BASE_URL}landing/spark.svg`}
           alt=""
           width={px(SPARK.w)}
           height={px(SPARK.h)}

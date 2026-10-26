@@ -270,7 +270,7 @@ function MapFlights() {
       <span className="pp-chip" />
       <img
         className="pp-plane"
-        src="/landing/plane.svg"
+        src={`${import.meta.env.BASE_URL}landing/plane.svg`}
         alt=""
         width={PLANE.w * SCALE}
         height={PLANE.h * SCALE}

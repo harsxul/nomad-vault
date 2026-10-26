@@ -4,7 +4,7 @@
 
 ## Links
 
-- **Live demo:** https://nomad-vault.vercel.app (talks to our real Stellar testnet backend; if that is offline it shows a snapshot of the same real testnet data)
+- **Live demo:** https://harsxul.github.io/nomad-vault/ (talks to our real Stellar testnet backend while it is online; otherwise it shows a snapshot of the same real testnet data, with working transaction links)
 - **Live backend, direct:** https://lows-institute-tiles-math.trycloudflare.com (served from the team laptop during judging)
 - **Repo:** https://github.com/harsxul/nomad-vault
 - Pitch deck and demo video: linked in the HackMeridian submission

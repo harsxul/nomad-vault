@@ -56,7 +56,7 @@ function Card({ n, item, height, variant }) {
     <li className={`lp-card lp-card--${variant}`}>
       <span className="lp-card__num" aria-hidden="true">{String(n).padStart(2, '0')}</span>
       <img
-        className="lp-card__art" src={`/landing/${item.img}.webp`} width={item.w} height={height}
+        className="lp-card__art" src={`${import.meta.env.BASE_URL}landing/${item.img}.webp`} width={item.w} height={height}
         alt="" loading="lazy" decoding="async"
       />
       <h3 className="lp-card__title">{item.title.map((line, i) => <span key={line}>{i > 0 && ' '}{line}</span>)}</h3>
@@ -96,7 +96,7 @@ export default function Landing() {
             <Link to="/app" className="lp-btn lp-btn--cobalt">Explore Demo</Link>
           </div>
           <div className="lp-map">
-            <img className="lp-map__dots" src="/landing/world-dots.svg" width="1280" height="430" alt="" />
+            <img className="lp-map__dots" src={`${import.meta.env.BASE_URL}landing/world-dots.svg`} width="1280" height="430" alt="" />
             <ul className="lp-map__tags" aria-label="Example contractors">
               {TAGS.map((t, i) => (
                 <li
@@ -135,7 +135,7 @@ export default function Landing() {
             </div>
             <div className="lp-stage">
               <img
-                className="lp-shot" src="/landing/dashboard.webp" width="1728" height="1581" loading="lazy" decoding="async"
+                className="lp-shot" src={`${import.meta.env.BASE_URL}landing/dashboard.webp`} width="1728" height="1581" loading="lazy" decoding="async"
                 alt="Employer dashboard: treasury balance, next payroll and recent payments to Maya, Mateo and Jonas in USDC."
               />
               <div className="lp-note lp-note--payday">
@@ -172,7 +172,7 @@ export default function Landing() {
             <p className="lp-sub lp-sub--cobalt">One treasury. Private payments. A better way to pay your global team.</p>
             <Link to="/app" className="lp-btn lp-btn--cobalt">Explore Demo</Link>
           </div>
-          <img className="lp-closing__globe" src="/landing/globe.webp" width="1933" height="322" alt="" loading="lazy" decoding="async" />
+          <img className="lp-closing__globe" src={`${import.meta.env.BASE_URL}landing/globe.webp`} width="1933" height="322" alt="" loading="lazy" decoding="async" />
         </section>
       </main>
 

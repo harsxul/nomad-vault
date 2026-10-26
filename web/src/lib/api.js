@@ -36,7 +36,7 @@ const demoState = {
   runs: [],
 };
 
-const hostedDemo = () => typeof window !== 'undefined' && /(?:vercel\.app|now\.sh|tmp\.now)$/.test(window.location.hostname);
+const hostedDemo = () => typeof window !== 'undefined' && /(?:vercel\.app|now\.sh|tmp\.now|github\.io)$/.test(window.location.hostname);
 
 function demoApi(path, method, body = {}) {
   // Hosted preview: serve the real testnet snapshot (scripts/snapshot.mjs) for every page it covers.
